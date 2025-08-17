@@ -3,5 +3,5 @@
 Dataset is available at: https://www.kaggle.com/datasets/kusnguyen/extra-dataset/data
 
 <p align="center">
-  <img src=".images\Proposed System.png" alt="Overview of the MTikGuard system." width="600">
+  <img src="./images/proposed-system.png" alt="Overview of the MTikGuard system." width="600">
 </p>
