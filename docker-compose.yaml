@@ -1,0 +1,67 @@
+version: '3'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    restart: always
+    networks:
+      - kidguardnet
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    restart: always
+    networks:
+      - kidguardnet
+
+  airflow:
+    image: apache/airflow:2.8.1
+    restart: always
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__FERNET_KEY=Qk1kQk1kQk1kQk1kQk1kQk1kQk1kQk1kQk1kQk1kQk0=
+      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
+      - AIRFLOW__WEBSERVER__SECRET_KEY=k3j4h5k6j4h5k6j4h5k6j4h5k6j4h5k6j4h5k6j4h5k6j4
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow_db/airflow.db
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./airflow_db:/opt/airflow/airflow_db
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8080:8080"
+    command: webserver
+    networks:
+      - kidguardnet
+
+  scheduler:
+    image: apache/airflow:2.8.1
+    restart: always
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__FERNET_KEY=Qk1kQk1kQk1kQk1kQk1kQk1kQk1kQk1kQk1kQk1kQk0=
+      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
+      - AIRFLOW__WEBSERVER__SECRET_KEY=k3j4h5k6j4h5k6j4h5k6j4h5k6j4h5k6j4h5k6j4h5k6j4
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow_db/airflow.db
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./airflow_db:/opt/airflow/airflow_db
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: scheduler
+    networks:
+      - kidguardnet
+
+networks:
+  kidguardnet:
+    driver: bridge
