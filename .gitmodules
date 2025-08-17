@@ -1,0 +1,4 @@
+[submodule "TikTok-Content-Scraper"]
+	path = TikTok-Content-Scraper
+	url = git@github.com:ntdat-8324/TikTok-Content-Scraper.git
+	branch = main
